@@ -1,0 +1,24 @@
+{
+  "name": "aws-lambda-elbdetector",
+  "version": "1.0.0",
+  "description": "Lambda functions for handling changes in ELBs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/24HOURSMEDIA/aws-lambda-elbdetector.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/24HOURSMEDIA/aws-lambda-elbdetector/issues"
+  },
+  "homepage": "https://github.com/24HOURSMEDIA/aws-lambda-elbdetector#readme",
+  "dependencies": {
+    "async": "^1.5.0",
+    "aws-sdk": "^2.2.15",
+    "merge": "^1.2.0"
+  }
+}
