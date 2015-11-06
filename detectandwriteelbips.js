@@ -4,6 +4,8 @@ console.log('Loading function');
 var DNS = require('dns');
 var merge = require('merge');
 var async = require('async');
+var fs = require('fs');
+
 
 exports.handler = function(event, context) {
     // configurable options through event
@@ -11,12 +13,17 @@ exports.handler = function(event, context) {
         aws_access_key: "",
         aws_secret_access_key: "",
         aws_region: "",
-        elb_names: ["vertigo-cf-lb","verobackend-ix-private-lb"],
+        elb_names: [],
         s3_bucket: "",
         s3_dir: "elb",
         test: true
     }
-    config = merge(config, event);
+    var cfg = JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json', 'utf8'));
+    config = merge(config, cfg);
+
+    //if (config.elb_names.length == 0) {
+    //    throw 'error elbs must be specified';
+    //}
 
     console.log("STARTING IN %s MODE", config.test ? "TEST" : "PROD");
 
@@ -110,7 +117,7 @@ exports.handler = function(event, context) {
                 console.log('Loading previous data from S3');
                 var S3 = new AWS.S3({});
                 async.forEach(locals.elbs, function(elb, callback) {
-                    var key = config.s3_dir + "/" + elb.name;
+                    var key = config.s3_dir + "/" + elb.name + ".json";
                     var params = {Bucket: config.s3_bucket, Key: key};
                     S3.getObject(params, function(err,data) {
                         if (!err) {
@@ -140,7 +147,7 @@ exports.handler = function(event, context) {
                                 console.log("running in test mode, skipped storing on s3");
                                 callback();
                             } else {
-                                var key = config.s3_dir + "/" + elb.name;
+                                var key = config.s3_dir + "/" + elb.name + ".json";
                                 console.log("writing data to %s %s", config.s3_bucket, key);
                                 var params = {Bucket: config.s3_bucket, Key: key, Body: JSON.stringify(elb)};
                                 S3.putObject(params, function(err, data) {

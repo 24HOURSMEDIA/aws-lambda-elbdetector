@@ -1,10 +1,11 @@
 
-<<<<<<< HEAD
+
 .idea
 .ideaOld
-=======
->>>>>>> e99a13beb6c48ca2677d740e462583298f71a32a
-test/*.json
+
+lambda-deploymentpackage/*
+
+etc/*.json
 
 # Logs
 logs

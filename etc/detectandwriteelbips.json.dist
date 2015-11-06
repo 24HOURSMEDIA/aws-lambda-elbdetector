@@ -3,6 +3,7 @@
     "aws_secret_access_key": "",
     "aws_region": "eu-west-1",
     "s3_bucket": "resolved-hosts",
+    "elb_names": [],
     "s3_key": "elb",
     "test": true
 }
