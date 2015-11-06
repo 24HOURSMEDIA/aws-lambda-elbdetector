@@ -1,6 +1,3 @@
-console.log('Loading function');
-
-
 var DNS = require('dns');
 var merge = require('merge');
 var async = require('async');
