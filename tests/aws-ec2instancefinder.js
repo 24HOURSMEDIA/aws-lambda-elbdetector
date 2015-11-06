@@ -2,9 +2,6 @@ var merge = require('merge');
 var fs = require('fs');
 var AWS = require('aws-sdk');
 
-require('../lib/aws-ec2instancefinder');
-
-
 var awsConfig = merge(
     JSON.parse(fs.readFileSync('./../etc/aws.json.dist', 'utf8')),
     JSON.parse(fs.readFileSync('./../etc/aws.json', 'utf8'))
@@ -17,16 +14,16 @@ AWS.config.update({
     region: awsConfig.aws_region
 });
 
-finder = new EC2InstanceFinder(new AWS.EC2());
-console.log(finder);
 
+var finder = require('../lib/aws-ec2instancefinder')(new AWS.EC2());
 
 finder.findByRunningAndHavingTags([
     {key: 'stack', value: 'vertigo-api2'}
 ], function (err, instances) {
     console.log('found %s instances', instances.length);
-   // console.log(instances);
+
 });
+
 
 
 
