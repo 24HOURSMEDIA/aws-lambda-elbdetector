@@ -9,18 +9,16 @@ var fs = require('fs');
 
 exports.handler = function(event, context) {
     // configurable options through event
-    var config = {
-        aws_access_key: "",
-        aws_secret_access_key: "",
-        aws_region: "",
-        elb_names: [],
-        s3_bucket: "",
-        s3_dir: "elb",
-        test: true
-    }
-    var cfg = JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json', 'utf8'));
-    config = merge(config, cfg);
+    var awsConfig = merge(
+        JSON.parse(fs.readFileSync('./etc/aws.json.dist', 'utf8')),
+        JSON.parse(fs.readFileSync('./etc/aws.json', 'utf8'))
+    );
+    var config = merge(
+        JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json.dist', 'utf8')),
+        JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json', 'utf8'))
+    );
 
+    console.log(config);
     //if (config.elb_names.length == 0) {
     //    throw 'error elbs must be specified';
     //}
@@ -29,9 +27,9 @@ exports.handler = function(event, context) {
 
     var AWS = require('aws-sdk');
     AWS.config.update({
-        accessKeyId: config.aws_access_key,
-        secretAccessKey: config.aws_secret_access_key,
-        region: config.aws_region
+        accessKeyId: awsConfig.aws_access_key,
+        secretAccessKey: awsConfig.aws_secret_access_key,
+        region: awsConfig.aws_region
     });
 
     var locals = {
@@ -54,7 +52,7 @@ exports.handler = function(event, context) {
             function(callback) {
                 // get the elb descriptions from AWS
                 // and create an Elb in locals.elbs
-                console.log('Retrieving ELB data for ELBs %s', config.elb_names.length > 0 ? config.elb_names.join(', ') : 'all ELBS');
+                console.log('retrieving ELB data for ELBs %s', config.elb_names.length > 0 ? config.elb_names.join(', ') : 'all ELBS');
                 var awsElb = new AWS.ELB({
                     apiVersion: '2012-06-01'
                 });
@@ -76,12 +74,12 @@ exports.handler = function(event, context) {
             },
             function(callback) {
                 if (locals.elbs.length == 0) {
-                    console.log('No ELBS found.');
+                    console.log('no ELBS found.');
                     callback();
                 } else {
                     console.log('found elbs %s', locals.elbs.map(function (elb) {
-                        return '1';
-                    }).join(', '));
+                        return elb.name;
+                    }).join(', '), 'looking up ipv4 and ipv6 for elbs');
 
                     console.log('Looking up IPV4 and IPV6 for ELBs');
                     // locals.elbs now contains array of loadbalancer objects
