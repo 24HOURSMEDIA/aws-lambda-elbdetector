@@ -1,0 +1,11 @@
+{
+  "name": "aws-ec2instancefinder",
+  "version": "1.0.0",
+  "description": "finds ec2 instances corresponding to certain criteria",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "E. Bachman <info@24hoursmedia.com> (http://www.24hoursmedia.com)",
+  "license": "ISC"
+}
