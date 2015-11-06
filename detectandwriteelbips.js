@@ -54,7 +54,7 @@ exports.handler = function(event, context) {
             function(callback) {
                 // get the elb descriptions from AWS
                 // and create an Elb in locals.elbs
-                console.log('Retrieving ELB data');
+                console.log('Retrieving ELB data for ELBs %s', config.elb_names.length > 0 ? config.elb_names.join(', ') : 'all ELBS');
                 var awsElb = new AWS.ELB({
                     apiVersion: '2012-06-01'
                 });
@@ -75,42 +75,52 @@ exports.handler = function(event, context) {
 
             },
             function(callback) {
-                console.log('Looking up IPV4 and IPV6 for ELBs');
-                // locals.elbs now contains array of loadbalancer objects
-                // foreach local.elbs, append ipv4 and ipv6 adresses
-                async.forEach(locals.elbs, function(elb, callback) {
-                    // lookup ipv4 and ipv6 adresses
-                    async.parallel([
-                        function(callback) {
-                            DNS.resolve4(elb.dns, function(err,data) {
-                                if (!err) {
-                                    elb.ipv4 = data.sort();
-                                } else {
-                                    if (err.code == 'ENODATA') {
-                                        err =  null;
+                if (locals.elbs.length == 0) {
+                    console.log('No ELBS found.');
+                    callback();
+                } else {
+                    console.log('found elbs %s', locals.elbs.map(function (elb) {
+                        return '1';
+                    }).join(', '));
+
+                    console.log('Looking up IPV4 and IPV6 for ELBs');
+                    // locals.elbs now contains array of loadbalancer objects
+                    // foreach local.elbs, append ipv4 and ipv6 adresses
+                    async.forEach(locals.elbs, function (elb, callback) {
+                        // lookup ipv4 and ipv6 adresses
+                        async.parallel([
+                            function (callback) {
+                                DNS.resolve4(elb.dns, function (err, data) {
+                                    if (!err) {
+                                        elb.ipv4 = data.sort();
+                                    } else {
+                                        if (err.code == 'ENODATA') {
+                                            err = null;
+                                        }
                                     }
-                                }
-                                callback(err);
-                            });
-                        },
-                        function(callback) {
-                            DNS.resolve6(elb.dns, function(err,data) {
-                                if (!err) {
-                                    elb.ipv6 = data.sort();;
-                                } else {
-                                    if (err.code == 'ENODATA') {
-                                        err =  null;
+                                    callback(err);
+                                });
+                            },
+                            function (callback) {
+                                DNS.resolve6(elb.dns, function (err, data) {
+                                    if (!err) {
+                                        elb.ipv6 = data.sort();
+                                        ;
+                                    } else {
+                                        if (err.code == 'ENODATA') {
+                                            err = null;
+                                        }
                                     }
-                                }
-                                callback(err);
-                            });
-                        }
-                    ], function(err) {
+                                    callback(err);
+                                });
+                            }
+                        ], function (err) {
+                            callback(err);
+                        });
+                    }, function (err) {
                         callback(err);
                     });
-                }, function(err) {
-                    callback(err);
-                });
+                }
             },
             function(callback) {
                 // loading previous data
