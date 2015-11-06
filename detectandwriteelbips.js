@@ -17,14 +17,7 @@ exports.handler = function(event, context) {
         JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json.dist', 'utf8')),
         JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json', 'utf8'))
     );
-
-    console.log(config);
-    //if (config.elb_names.length == 0) {
-    //    throw 'error elbs must be specified';
-    //}
-
     console.log("STARTING IN %s MODE", config.test ? "TEST" : "PROD");
-
     var AWS = require('aws-sdk');
     AWS.config.update({
         accessKeyId: awsConfig.aws_access_key,
@@ -45,7 +38,36 @@ exports.handler = function(event, context) {
         this.prev_ipv4 = [];
         this.ipv6 = [];
         this.prev_ipv6 = [];
+        // date of change
         this.changed = null;
+
+        // return true if ipv4 differs from previous ipv4, same for ipv6
+        // but only if both the previous ipv4's are empty.
+        this.hasChanged = function() {
+            var changed =
+            ((this.prev_ipv4.length > 0) && (this.ipv4.sort().toString() != this.prev_ipv4.sort().toString()))
+            || ((this.prev_ipv6.length > 0) && (this.ipv6.sort().toString() != this.prev_ipv6.sort().toString()))
+            ;
+            return changed;
+        };
+
+        // return a string that describes changes
+        this.describeChanges = function() {
+            var s= 'ip changes in elb ' + this.name + ' : ';
+            if (this.ipv4.toString() != this.prev_ipv4.toString()) {
+                s+='IPV4s changed - current: ' + this.ipv4.toString() + ' Old ' + this.prev_ipv4.toString() + '. ';
+                return s;
+            } else {
+                s+='no IPV4s changed. ';
+            }
+            if (this.ipv6.toString() != this.prev_ipv6.toString()) {
+                s+='IPV6s changed - current: ' + this.ipv6.toString() + ' Old ' + this.prev_ipv6.toString();
+                return s;
+            } else {
+                s+='no IPV6s changed';
+            }
+            return s;
+        };
     }
 
     async.series([
@@ -81,7 +103,7 @@ exports.handler = function(event, context) {
                         return elb.name;
                     }).join(', '), 'looking up ipv4 and ipv6 for elbs');
 
-                    console.log('Looking up IPV4 and IPV6 for ELBs');
+                    console.log('looking up IPV4 and IPV6 for ELBs');
                     // locals.elbs now contains array of loadbalancer objects
                     // foreach local.elbs, append ipv4 and ipv6 adresses
                     async.forEach(locals.elbs, function (elb, callback) {
@@ -103,7 +125,6 @@ exports.handler = function(event, context) {
                                 DNS.resolve6(elb.dns, function (err, data) {
                                     if (!err) {
                                         elb.ipv6 = data.sort();
-                                        ;
                                     } else {
                                         if (err.code == 'ENODATA') {
                                             err = null;
@@ -122,7 +143,7 @@ exports.handler = function(event, context) {
             },
             function(callback) {
                 // loading previous data
-                console.log('Loading previous data from S3');
+                console.log('loading previous data from S3');
                 var S3 = new AWS.S3({});
                 async.forEach(locals.elbs, function(elb, callback) {
                     var key = config.s3_dir + "/" + elb.name + ".json";
@@ -134,6 +155,7 @@ exports.handler = function(event, context) {
                             elb.prev_ipv6 = oldElb.ipv6;
                         } else if (err.code == 'NoSuchKey') {
                             // first instantiation
+                            console.log('first storage of elb description for %s', elb.name);
                             err = null;
                         }
                         callback(err);
@@ -145,11 +167,11 @@ exports.handler = function(event, context) {
             function(callback) {
                 // get the existing description and verify if ipv4 or ipv6 is changed.
                 // if changed, write data to S3
-                console.log('Writing changed ELB datas to S3');
+                console.log('detecting changed ips for elbs and if changed write to to S3');
                 var S3 = new AWS.S3({});
                 async.forEach(locals.elbs, function(elb, callback) {
-                        if (elb.ipv4.toString() != elb.prev_ipv4.toString() || elb.ipv6.toString() != elb.prev_ipv6.toString()) {
-                            console.log('elb %s ips changed!', elb.name);
+                        console.log(elb.describeChanges());
+                        if (elb.hasChanged()) {
                             elb.changed = new Date();
                             if (config.test) {
                                 console.log("running in test mode, skipped storing on s3");
@@ -166,8 +188,6 @@ exports.handler = function(event, context) {
                             console.log('no change for elb ' + elb.name);
                             callback();
                         }
-
-
                     }, function(err) {
                         callback(err);
                 });
