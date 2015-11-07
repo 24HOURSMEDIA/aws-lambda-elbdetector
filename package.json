@@ -18,7 +18,10 @@
   "homepage": "https://github.com/24HOURSMEDIA/aws-lambda-elbdetector#readme",
   "dependencies": {
     "async": "^1.5.0",
-    "aws-sdk": "^2.2.15",
+
     "merge": "^1.2.0"
+  },
+  "_": {
+    "aws-sdk": "^2.2.15"
   }
 }

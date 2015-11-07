@@ -7,6 +7,10 @@ lambda-deploymentpackage/*
 
 etc/*.json
 
+.env
+deploy/*.env
+event.json
+
 # Logs
 logs
 *.log

@@ -11,6 +11,7 @@ exports.handler = function(event, context) {
         JSON.parse(fs.readFileSync('./etc/aws.json.dist', 'utf8')),
         JSON.parse(fs.readFileSync('./etc/aws.json', 'utf8'))
     );
+
     var config = merge(
         JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json.dist', 'utf8')),
         JSON.parse(fs.readFileSync('./etc/detectandwriteelbips.json', 'utf8'))

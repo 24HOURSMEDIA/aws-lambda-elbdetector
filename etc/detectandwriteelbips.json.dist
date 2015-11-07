@@ -1,5 +1,5 @@
 {
-    "s3_bucket": "resolved-hosts",
+    "s3_bucket": "",
     "elb_names": [],
     "s3_dir": "elb",
     "test": true

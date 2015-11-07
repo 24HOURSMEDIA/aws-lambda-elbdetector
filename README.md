@@ -21,3 +21,4 @@ create deployment package manually
     zip lambda-deploymentpackage/aws-lambda-elbdetector.zip detectandwriteelbips.js node_modules lib etc -r
 
 
+    sh deploy/staging/deploy_sendec2sqsmessage.sh
