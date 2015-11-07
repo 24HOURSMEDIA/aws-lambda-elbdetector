@@ -2,11 +2,22 @@
 Lambda functions for handling changes in ELBs
 
 
-npm install node-lambda -g
+## Testing/sample invocations
 
-    lambda-local -l detectandwriteelbips.js -h handler -e test/detectandwriteelbips.event.json -t 12
+you should have node-lambda installed locally
+
+    npm install node-lambda -g
+
+detect elb ip changes and write them to S3
+
+    node-lambda run -h detectandwriteelbips.handler -j sample-eventfiles/empty-event.json
 
 
-zip lambda-deploymentpackage/aws-lambda-elbdetector.zip detectandwriteelbips.js node_modules lib etc -r
+    node-lambda run -h sendec2sqsmessage.handler -j sample-eventfiles/s3-elb-change.json
+
+
+create deployment package manually
+
+    zip lambda-deploymentpackage/aws-lambda-elbdetector.zip detectandwriteelbips.js node_modules lib etc -r
 
 

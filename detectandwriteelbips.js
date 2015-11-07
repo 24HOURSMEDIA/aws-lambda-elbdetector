@@ -3,7 +3,7 @@ var merge = require('merge');
 var async = require('async');
 var fs = require('fs');
 
-require('./lib/elb');
+var elbFactory = require('./lib/dto/elbfactory');
 
 exports.handler = function(event, context) {
     // configurable options through event
@@ -41,7 +41,7 @@ exports.handler = function(event, context) {
                         if (!err) {
                             // store elb dns names in locals
                             for (var elbIndex = 0; elbIndex < data.LoadBalancerDescriptions.length; elbIndex++) {
-                                var elb = new Elb();
+                                var elb = elbFactory.create();
                                 elb.name = data.LoadBalancerDescriptions[elbIndex].LoadBalancerName;
                                 elb.dns = data.LoadBalancerDescriptions[elbIndex].DNSName;
                                 locals.elbs.push(elb);
@@ -128,7 +128,7 @@ exports.handler = function(event, context) {
                 var S3 = new AWS.S3({});
                 async.forEach(locals.elbs, function(elb, callback) {
                         console.log(elb.describeChanges());
-                        if (elb.hasChanged()) {
+                        if (elb.ipsHaveChanged()) {
                             elb.changed = new Date();
                             if (config.test) {
                                 console.log("running in test mode, skipped storing on s3");

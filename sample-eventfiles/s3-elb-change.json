@@ -1,0 +1,38 @@
+{
+  "Records": [
+    {
+      "eventVersion": "2.0",
+      "eventSource": "aws:s3",
+      "awsRegion": "eu-west-1",
+      "eventTime": "2015-11-06T14:48:32.465Z",
+      "eventName": "ObjectCreated:Put",
+      "userIdentity": {
+        "principalId": "AWS:AROAJBETNI3FVVEWNQDVG:awslambda_952_20151106105118781"
+      },
+      "requestParameters": {
+        "sourceIPAddress": "52.31.71.97"
+      },
+      "responseElements": {
+        "x-amz-request-id": "EC552FAFE13BE728",
+        "x-amz-id-2": "qx+70Gt1+0fBtAPFjUF9Jo2Zss2DwNpmI5IBzf7uEBRXvaeItwj5N/yYaXrCarjLYx9YbqSRE18="
+      },
+      "s3": {
+        "s3SchemaVersion": "1.0",
+        "configurationId": "elb-ip-changed-warning",
+        "bucket": {
+          "name": "nl.v-m.resolved-hosts",
+          "ownerIdentity": {
+            "principalId": "A1AHNOUI23MSLZ"
+          },
+          "arn": "arn:aws:s3:::nl.v-m.resolved-hosts"
+        },
+        "object": {
+          "key": "elb/vertigo-cf-mypanel-lb.json",
+          "size": 257,
+          "eTag": "fabfd6d8721f8954ea97b5d970b6292c",
+          "sequencer": "00563CBDC0692ADCED"
+        }
+      }
+    }
+  ]
+}
