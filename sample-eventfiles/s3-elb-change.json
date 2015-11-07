@@ -1,4 +1,7 @@
 {
+  "config_override": {
+
+  },
   "Records": [
     {
       "eventVersion": "2.0",
@@ -27,7 +30,7 @@
           "arn": "arn:aws:s3:::nl.v-m.resolved-hosts"
         },
         "object": {
-          "key": "elb/vertigo-cf-mypanel-lb.json",
+          "key": "elb/vertigo-cf-lb.json",
           "size": 257,
           "eTag": "fabfd6d8721f8954ea97b5d970b6292c",
           "sequencer": "00563CBDC0692ADCED"

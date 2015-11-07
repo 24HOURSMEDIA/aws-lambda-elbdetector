@@ -8,6 +8,9 @@ lambda-deploymentpackage/*
 etc/*.json
 
 .env
+/deploy/staging/sendec2sqsmessage.env
+/deploy/prod/sendec2sqsmessage.env
+/sample-eventfiles/s3-elb-change.json
 deploy/*.env
 event.json
 
