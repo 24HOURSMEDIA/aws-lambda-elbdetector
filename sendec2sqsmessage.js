@@ -94,12 +94,14 @@ exports.handler = function (event, context) {
                 // create sqs messages
                 var SQS = new AWS.SQS();
                 async.each(locals.instances, function (instance, next) {
-                        var messageData = messageFactory.createEventMessage();
-                        messageData.event_id = "elb.ipchanged";
-                        messageData.target_instance_id = instance.instance_id;
+                        var messageData = messageFactory.createEc2BackendDnsChangedEvent();
+                        //messageData.event_id = "elb.ipchanged";
+                        messageData.target_instance = instance.instance_id;
+                        messageData.event_source = 'aws:lambda';
                         messageData.event_data = {
                             "elb": instance.elb
                         };
+                    console.log(messageData);
                         // send to sqs queue
                         var params = {
                             MessageBody: 'Event that notifies instance ' + instance.instance_id + ' that ELB ' + instance.elb.name + " has changed ips: " + instance.elb.describeChanges(),
