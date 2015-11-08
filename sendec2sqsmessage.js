@@ -101,7 +101,7 @@ exports.handler = function (event, context) {
                         messageData.event_data = {
                             "elb": instance.elb
                         };
-                    console.log(messageData);
+                        //console.log(messageData);
                         // send to sqs queue
                         var params = {
                             MessageBody: 'Event that notifies instance ' + instance.instance_id + ' that ELB ' + instance.elb.name + " has changed ips: " + instance.elb.describeChanges(),
@@ -122,7 +122,7 @@ exports.handler = function (event, context) {
                         if (!config.test) {
                             SQS.sendMessage(params, function (err) {
                                 if (!err) {
-                                    console.log('message sent');
+                                    console.log('message sent for ec2:' + instance.instance_id);
                                 }
                                 next(err);
                             });
